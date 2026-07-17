@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mis Handgrips - Registro de Fuerza</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --accent-color: #00adb5;
+            --accent-hover: #00fff5;
+            --text-color: #eeeeee;
+            --text-muted: #999999;
+            --border-color: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--accent-color);
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            text-align: center;
+        }
+
+        .stat-box {
+            background-color: rgba(255,255,255,0.03);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-val {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--accent-hover);
+        }
+
+        .stat-lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 5px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            background-color: rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: white;
+            font-size: 1rem;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .row .form-group {
+            flex: 1;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--accent-color);
+            color: #121212;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .log-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .log-item:last-child {
+            border-bottom: none;
+        }
+
+        .log-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .log-title {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        .log-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 3px;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: #ff5555;
+            cursor: pointer;
+            width: auto;
+            padding: 5px;
+            font-size: 0.9rem;
+        }
+
+        .delete-btn:hover {
+            color: #ff8888;
+            background: none;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            padding: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Mis Handgrips</h1>
+        <p class="subtitle">Registro de Entrenamiento de Fuerza de Agarre</p>
+    </header>
+
+    <!-- Panel de Estadísticas -->
+    <div class="card">
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-val" id="stat-max">0 lb</div>
+                <div class="stat-lbl">Máx Cerrado</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-val" id="stat-reps">0</div>
+                <div class="stat-lbl">Reps Totales</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-val" id="stat-sessions">0</div>
+                <div class="stat-lbl">Sesiones</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Formulario para Añadir Registro -->
+    <div class="card">
+        <h2>Añadir Sesión</h2>
+        <form id="grip-form">
+            <div class="form-group">
+                <label for="resistance">Resistencia del Handgrip (lbs o kg)</label>
+                <input type="number" id="resistance" placeholder="Ej. 150" required>
+            </div>
+            <div class="row">
+                <div class="form-group">
+                    <label for="sets">Series</label>
+                    <input type="number" id="sets" placeholder="Ej. 4" required>
+                </div>
+                <div class="form-group">
+                    <label for="reps">Reps por Serie</label>
+                    <input type="number" id="reps" placeholder="Ej. 10" required>
+                </div>
+            </div>
+            <button type="submit">Guardar Entrenamiento</button>
+        </form>
+    </div>
+
+    <!-- Historial -->
+    <div class="card">
+        <h2>Historial de Progreso</h2>
+        <div id="log-list">
+            <!-- Los registros aparecerán aquí -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Inicializar datos desde localStorage
+    let workouts = JSON.parse(localStorage.getItem('grip_workouts')) || [];
+
+    const form = document.getElementById('grip-form');
+    const logList = document.getElementById('log-list');
+    const statMax = document.getElementById('stat-max');
+    const statReps = document.getElementById('stat-reps');
+    const statSessions = document.getElementById('stat-sessions');
+
+    function updateStats() {
+        if (workouts.length === 0) {
+            statMax.textContent = '0 lb';
+            statReps.textContent = '0';
+            statSessions.textContent = '0';
+            return;
+        }
+
+        const maxGrip = Math.max(...workouts.map(w => w.resistance));
+        const totalReps = workouts.reduce((sum, w) => sum + (w.sets * w.reps), 0);
+        
+        statMax.textContent = `${maxGrip} lb`;
+        statReps.textContent = totalReps;
+        statSessions.textContent = workouts.length;
+    }
+
+    function renderWorkouts() {
+        logList.innerHTML = '';
+        
+        if (workouts.length === 0) {
+            logList.innerHTML = '<div class="empty-state">No hay entrenamientos registrados aún. ¡Empieza hoy!</div>';
+            return;
+        }
+
+        // Mostrar del más nuevo al más viejo
+        [...workouts].reverse().forEach((w, index) => {
+            const actualIndex = workouts.length - 1 - index;
+            const item = document.createElement('div');
+            item.className = 'log-item';
+            item.innerHTML = `
+                <div class="log-info">
+                    <span class="log-title">${w.resistance} lbs/kg</span>
+                    <span class="log-meta">${w.sets} series x ${w.reps} reps | ${w.date}</span>
+                </div>
+                <button class="delete-btn" onclick="deleteWorkout(${actualIndex})">Eliminar</button>
+            `;
+            logList.appendChild(item);
+        });
+    }
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        
+        const resistance = parseInt(document.getElementById('resistance').value);
+        const sets = parseInt(document.getElementById('sets').value);
+        const reps = parseInt(document.getElementById('reps').value);
+        
+        const today = new Date();
+        const dateStr = today.toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+
+        const newWorkout = { resistance, sets, reps, date: dateStr };
+        workouts.push(newWorkout);
+        
+        localStorage.setItem('grip_workouts', JSON.stringify(workouts));
+        
+        form.reset();
+        updateStats();
+        renderWorkouts();
+    });
+
+    window.deleteWorkout = function(index) {
+        workouts.splice(index, 1);
+        localStorage.setItem('grip_workouts', JSON.stringify(workouts));
+        updateStats();
+        renderWorkouts();
+    }
+
+    // Carga inicial
+    updateStats();
+    renderWorkouts();
+</script>
+
+</body>
+</html>
